@@ -15,6 +15,7 @@ import (
     _ "github.com/lib/pq"  
     "log" 
     "strings"
+    "errors"
 )
 
 func logging_var(input_var interface{}) {
@@ -403,7 +404,7 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
     }   
 }
 
-func golang_api_post_deploy_tx (binaryStr string, rpcPort string) {
+func golang_api_post_deploy_tx (binaryStr string, rpcPort string) error{
 
     print(len(binaryStr))
 
@@ -419,6 +420,7 @@ func golang_api_post_deploy_tx (binaryStr string, rpcPort string) {
 
     if err != nil {
         print(err)
+        return errors.New("custom error")
     }
     //defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
@@ -430,6 +432,7 @@ func golang_api_post_deploy_tx (binaryStr string, rpcPort string) {
 
     fmt.Println(string(body))
 
+    return nil
 }
 
 //1. gitclone, change oeml, start node, running by its own thread
@@ -527,7 +530,7 @@ func main() {
         fmt.Println("help menu: ....")        
         return 
     }
-    
+
     fmt.Println(argsWithProg)    
     fmt.Println(arg[1])
     
