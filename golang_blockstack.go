@@ -296,6 +296,7 @@ func blockchain_run_testing () {
 func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_port string) {
 
     var currentLineNumber int64
+    logFilePath := workingFolder + "/" + "trace_logging.txt"
 
     path, err := os.Getwd()
     if err != nil {
@@ -342,9 +343,9 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
         }
         fmt.Print("run_cmd_stdout =" + string(run_cmd_stdout))  
 
-        currentLineNumber = fetch_current_lineNum_log_file("/home/michael/blockstack_testNet/blockchain_launch_node/node1/stacks-blockchain/trace_logging_2020-05-25.txt")
+        currentLineNumber = fetch_current_lineNum_log_file(logFilePath)
         golang_api_post_deploy_tx(string(run_cmd_stdout), rpc_port)
-        fetch_current_section_log_file("/home/michael/blockstack_testNet/blockchain_launch_node/node1/stacks-blockchain/trace_logging_2020-05-25.txt", currentLineNumber)
+        fetch_current_section_log_file(logFilePath, currentLineNumber)
         
     case 14:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12],arg[13])
@@ -354,9 +355,9 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
         }
         fmt.Print("run_cmd_stdout =" + string(run_cmd_stdout))  
 
-        currentLineNumber = fetch_current_lineNum_log_file("/home/michael/blockstack_testNet/blockchain_launch_node/node1/stacks-blockchain/trace_logging_2020-05-25.txt")
+        currentLineNumber = fetch_current_lineNum_log_file(logFilePath)
         golang_api_post_deploy_tx(string(run_cmd_stdout), rpc_port)
-        fetch_current_section_log_file("/home/michael/blockstack_testNet/blockchain_launch_node/node1/stacks-blockchain/trace_logging_2020-05-25.txt", currentLineNumber)
+        fetch_current_section_log_file(logFilePath, currentLineNumber)
 
         
     case 16:
@@ -367,9 +368,9 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
         }
         fmt.Print("run_cmd_stdout =" + string(run_cmd_stdout))  
 
-        currentLineNumber = fetch_current_lineNum_log_file("/home/michael/blockstack_testNet/blockchain_launch_node/node1/stacks-blockchain/trace_logging_2020-05-25.txt")
+        currentLineNumber = fetch_current_lineNum_log_file(logFilePath)
         golang_api_post_deploy_tx(string(run_cmd_stdout), rpc_port)
-        fetch_current_section_log_file("/home/michael/blockstack_testNet/blockchain_launch_node/node1/stacks-blockchain/trace_logging_2020-05-25.txt", currentLineNumber)
+        fetch_current_section_log_file(logFilePath, currentLineNumber)
 
     case 17:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12],arg[13],arg[14],arg[15],arg[16])
