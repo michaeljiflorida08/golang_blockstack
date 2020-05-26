@@ -270,7 +270,7 @@ func blockchain_run_testing () {
 
             //fmt.Println("fetching testing_environment table")
 
-            rows, err := db.Query("select testing_environment.test_working_directory as test_working_directory, testing_environment.rpc_port as rpc_port from testing_environment inner join running_scenario_on_testing_environment ON running_scenario_on_testing_environment.test_scenario_id = $1 " , test_scenario_id)
+            rows, err := db.Query("select testing_environment.test_working_directory as test_working_directory, testing_environment.rpc_port as rpc_port from testing_environment inner join running_scenario_on_testing_environment ON running_scenario_on_testing_environment.test_environment_id = testing_environment.test_environment_id where running_scenario_on_testing_environment.test_scenario_id = $1 ;" , test_scenario_id)
             if err != nil {
                 log.Fatal(err)
             }
