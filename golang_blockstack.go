@@ -261,14 +261,14 @@ func blockchain_run_testing () {
         if err := rows.Scan(&id, &test_scenario_id, &test_scenario_input_parameters, &scenario_description, &run_testing_flag, &comment); err != nil {
             log.Fatal(err)
         }
-        fmt.Println("fetching test_scenario_unit_testing table")
-        fmt.Printf("id = %n | test_scenario_id=%s| test_scenario_input_parameters= %s |scenario_description=%s |run_testing_flag=%s|comment=%s ", id,test_scenario_id, test_scenario_input_parameters,scenario_description,comment)
+        //fmt.Println("fetching test_scenario_unit_testing table")
+        //fmt.Printf("id = %n | test_scenario_id=%s| test_scenario_input_parameters= %s |scenario_description=%s |run_testing_flag=%s|comment=%s ", id,test_scenario_id, test_scenario_input_parameters,scenario_description,comment)
 
         if (run_testing_flag == "true") {
 
             db, err := sql.Open("postgres", psqlInfo)
 
-            fmt.Println("fetching testing_environment table")
+            //fmt.Println("fetching testing_environment table")
 
             rows, err := db.Query("select testing_environment.test_working_directory as test_working_directory, testing_environment.rpc_port as rpc_port from testing_environment inner join running_scenario_on_testing_environment ON running_scenario_on_testing_environment.test_scenario_id = $1 " , test_scenario_id)
             if err != nil {
@@ -285,7 +285,7 @@ func blockchain_run_testing () {
                 if err := rows.Scan(&test_working_directory, &rpc_port); err != nil {
                     log.Fatal(err)
                 }
-                fmt.Printf("test_working_directory = %n | rpc_port=%s ", test_working_directory,rpc_port)
+                //fmt.Printf("test_working_directory = %n | rpc_port=%s ", test_working_directory,rpc_port)
             }    
 
             blockchain_command_call_post_API (test_working_directory, test_scenario_input_parameters, rpc_port)
@@ -323,16 +323,8 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
 
     fmt.Println("cmdSlice")
     for i=0;i<len(cmdSlice);i++ {
-        arg[i] = cmdSlice[i]
-        fmt.Println(i)        
-        fmt.Println(cmdSlice[i])        
-        fmt.Println(arg[i])        
-    }
-    
-    for i=0;i<20;i++ {
-        fmt.Println(i)                     
-        fmt.Println(arg[i])           
-    }           
+        arg[i] = cmdSlice[i]            
+    }  
     
     switch len(cmdSlice){
     case 9:
@@ -353,20 +345,7 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
         currentLineNumber = fetch_current_lineNum_log_file("/home/michael/blockstack_testNet/blockchain_launch_node/node1/stacks-blockchain/trace_logging_2020-05-25.txt")
         golang_api_post_deploy_tx(string(run_cmd_stdout), rpc_port)
         fetch_current_section_log_file("/home/michael/blockstack_testNet/blockchain_launch_node/node1/stacks-blockchain/trace_logging_2020-05-25.txt", currentLineNumber)
-
-        /*
-        f, err := os.OpenFile(currentDir+"/tx.bin", os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0600)
-        if err != nil {
-            log.Fatal(err)
-            fmt.Println(err)        
-        }
-        for _, v := range string(run_cmd_stdout) {
-            fmt.Fprintf(f, "%b\n", v)
-        }
-        f.Close()  
-
-        golang_api_post_deploy_tx_1 (currentDir+"/tx.bin")
-        */
+        
     case 14:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12],arg[13])
         run_cmd_stdout, run_cmd_err := run_cmd.Output()    
