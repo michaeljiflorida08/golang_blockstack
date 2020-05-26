@@ -1,0 +1,81 @@
+sudo -u postgres psql
+
+\l
+
+\dt
+
+--CREATE DATABASE ;
+CREATE DATABASE blockstack_testing;
+\c blockstack_testing
+
+CREATE ROLE blockstack_testing_user_1 WITH LOGIN PASSWORD 'password';
+ALTER ROLE blockstack_testing_user_1 CREATEDB;
+
+grant all privileges on database blockstack_testing to blockstack_testing_user_1;
+
+CREATE TABLE test_scenario_create_node(id SERIAL PRIMARY KEY, root_dir VARCHAR(125), node_id VARCHAR(25), scenario_description VARCHAR(255), run_testing_flag VARCHAR(25), run_testing_result_verbiage VARCHAR(255), comment VARCHAR(255));
+
+
+grant all privileges on table test_scenario_create_node to blockstack_testing_user_1;
+grant all on sequence test_scenario_create_node_id_seq to blockstack_testing_user_1;
+
+grant all privileges on table test_scenario_unit_testing to blockstack_testing_user_1;
+grant all on sequence test_scenario_unit_testing_id_seq to blockstack_testing_user_1;
+
+CREATE TABLE test_scenario_run_node(id SERIAL PRIMARY KEY, root_dir VARCHAR(125), node_id VARCHAR(25), scenario_description VARCHAR(255), run_testing_flag VARCHAR(25), run_testing_result_verbiage VARCHAR(255), comment VARCHAR(255));
+
+grant all privileges on table test_scenario_run_node to blockstack_testing_user_1;
+grant all on sequence test_scenario_run_node_id_seq to blockstack_testing_user_1;
+
+
+INSERT INTO test_scenario_create_node(root_dir,node_id,scenario_description,run_testing_flag) VALUES('/home/michael/blockstack_testNet/blockchain_launch_node','node1','create node from root directory', 'true');
+select * from test_scenario_create_node;
+
+INSERT INTO test_scenario_run_node(root_dir,node_id,scenario_description,run_testing_flag) VALUES('/home/michael/blockstack_testNet/blockchain_launch_node','node1','create node from root directory', 'true');
+select * from test_scenario_create_node;
+
+--
+
+CREATE TABLE test_scenario_unit_testing (id SERIAL PRIMARY KEY, test_scenario_id VARCHAR(25), test_scenario_input_parameters VARCHAR(255), scenario_description VARCHAR(255), run_testing_flag VARCHAR(25),  comment VARCHAR(255));
+
+CREATE TABLE testing_environment (id SERIAL PRIMARY KEY, test_environment_id VARCHAR(25), test_working_directory VARCHAR(255), rpc_port VARCHAR(255), description VARCHAR(25), comment VARCHAR(255));
+
+CREATE TABLE testing_result (id SERIAL PRIMARY KEY, test_result_id VARCHAR(25), test_scenario_id VARCHAR(255),  execution_time_stamp VARCHAR(25), result VARCHAR(25), comment VARCHAR(255));
+
+grant all privileges on table test_scenario_unit_testing to blockstack_testing_user_1;
+grant all on sequence test_scenario_unit_testing_id_seq to blockstack_testing_user_1;
+
+grant all privileges on table testing_environment to blockstack_testing_user_1;
+grant all on sequence testing_environment_id_seq to blockstack_testing_user_1;
+
+grant all privileges on table test_scenario_unit_testing to blockstack_testing_user_1;
+grant all on sequence test_scenario_unit_testing_id_seq to blockstack_testing_user_1;
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('1', 'cargo run --bin blockstack-cli publish 6ecc1209186698ab96a60fb24ea04d2a41b53e0336d09dd272bfb8615a67af0b01 1000 17244427697079051201 kv-store kv-store.clar --testnet', 'publish kv-store smart contract', 'true', 'a tutorial smart contract');
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('2', 'cargo run --bin blockstack-cli contract-call 6ecc1209186698ab96a60fb24ea04d2a41b53e0336d09dd272bfb8615a67af0b01 1000 17244427697079051202 ST1J47E9EXS1YEFV36V2W5S02MCPCP7R6G71EMDG1 kv-store get-value -e foo --testnet', '1st set value kv-store smart contract', 'true', 'a tutorial smart contract');
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('3', 'cargo run --bin blockstack-cli contract-call 6ecc1209186698ab96a60fb24ea04d2a41b53e0336d09dd272bfb8615a67af0b01 1000 17244427697079051203 ST1J47E9EXS1YEFV36V2W5S02MCPCP7R6G71EMDG1 kv-store set-value -e foo -e bar --testnet', '2nd set value kv-store smart contract', 'true', 'a tutorial smart contract');
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('3', 'cargo run --bin blockstack-cli contract-call 6ecc1209186698ab96a60fb24ea04d2a41b53e0336d09dd272bfb8615a67af0b01 1000 17244427697079051204 ST1J47E9EXS1YEFV36V2W5S02MCPCP7R6G71EMDG1 kv-store get-value -e foo --testnet', 'retrieve value kv-store smart contract', 'true', 'a tutorial smart contract');
+
+
+select * from test_scenario_unit_testing;
+
+INSERT INTO testing_environment(test_environment_id , test_working_directory , rpc_port , description , comment ) VALUES('1' , '/home/michael/blockstack_testNet/blockchain_launch_node/node1/stacks-blockchain', '20443', 'neon miner node', 'neon miner node');
+
+select * from testing_environment;
+
+CREATE TABLE running_scenario_on_testing_environment (id SERIAL PRIMARY KEY, test_scenario_id VARCHAR(25), test_environment_id VARCHAR(255));
+
+grant all privileges on table running_scenario_on_testing_environment to blockstack_testing_user_1;
+grant all on sequence running_scenario_on_testing_environment_id_seq to blockstack_testing_user_1;
+
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('1' , '1');
+
+//table join
+
+select testing_environment.test_working_directory as test_working_directory, testing_environment.rpc_port as rpc_port from testing_environment inner join running_scenario_on_testing_environment ON running_scenario_on_testing_environment.test_scenario_id = '1';
+
+select testing_environment.test_working_directory as test_working_directory, testing_environment.rpc_port as rpc_port from testing_environment inner join running_scenario_on_testing_environment ON running_scenario_on_testing_environment.test_scenario_id = '1';
+
