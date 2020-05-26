@@ -1,3 +1,5 @@
+--create DB to guide testing,
+
 sudo -u postgres psql
 
 \l
@@ -51,13 +53,39 @@ grant all on sequence testing_environment_id_seq to blockstack_testing_user_1;
 grant all privileges on table test_scenario_unit_testing to blockstack_testing_user_1;
 grant all on sequence test_scenario_unit_testing_id_seq to blockstack_testing_user_1;
 
+//neon node testing:
+npx blockstack-cli@1.1.0-beta.1 make_keychain -t
+
+"privateKey": "6ecc1209186698ab96a60fb24ea04d2a41b53e0336d09dd272bfb8615a67af0b01",
+    "address": "ST1J47E9EXS1YEFV36V2W5S02MCPCP7R6G71EMDG1",
+    "btcAddress": "mpf6zjqpbrrsWigDMpvrdhgwNAA8tJuj7L",
+
+
 INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('1', 'cargo run --bin blockstack-cli publish 6ecc1209186698ab96a60fb24ea04d2a41b53e0336d09dd272bfb8615a67af0b01 1000 17244427697079051201 kv-store kv-store.clar --testnet', 'publish kv-store smart contract', 'true', 'a tutorial smart contract');
 
 INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('2', 'cargo run --bin blockstack-cli contract-call 6ecc1209186698ab96a60fb24ea04d2a41b53e0336d09dd272bfb8615a67af0b01 1000 17244427697079051202 ST1J47E9EXS1YEFV36V2W5S02MCPCP7R6G71EMDG1 kv-store get-value -e foo --testnet', '1st set value kv-store smart contract', 'true', 'a tutorial smart contract');
 
 INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('3', 'cargo run --bin blockstack-cli contract-call 6ecc1209186698ab96a60fb24ea04d2a41b53e0336d09dd272bfb8615a67af0b01 1000 17244427697079051203 ST1J47E9EXS1YEFV36V2W5S02MCPCP7R6G71EMDG1 kv-store set-value -e foo -e bar --testnet', '2nd set value kv-store smart contract', 'true', 'a tutorial smart contract');
 
-INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('3', 'cargo run --bin blockstack-cli contract-call 6ecc1209186698ab96a60fb24ea04d2a41b53e0336d09dd272bfb8615a67af0b01 1000 17244427697079051204 ST1J47E9EXS1YEFV36V2W5S02MCPCP7R6G71EMDG1 kv-store get-value -e foo --testnet', 'retrieve value kv-store smart contract', 'true', 'a tutorial smart contract');
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('4', 'cargo run --bin blockstack-cli contract-call 6ecc1209186698ab96a60fb24ea04d2a41b53e0336d09dd272bfb8615a67af0b01 1000 17244427697079051204 ST1J47E9EXS1YEFV36V2W5S02MCPCP7R6G71EMDG1 kv-store get-value -e foo --testnet', 'retrieve value kv-store smart contract', 'true', 'a tutorial smart contract');
+
+update test_scenario_unit_testing set test_scenario_id = '4' where id = 4
+
+//local node testing, rpc port 9000
+//buyer
+{ 
+  "secretKey": "849ff31326d834f987d132c57c17e2fe267402e204b6865fb823884b90e4d59f01",
+  "publicKey": "0208a564a84bea9e65c0544f4c0150aa2f218fa03a028cf108a98ae91c37bd2bb3",
+  "stacksAddress": "ST14N61FXVN8EENR9H3QDDZ850ES4F2QV8F98VP56"
+}
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('9001', 'cargo run --bin blockstack-cli publish 849ff31326d834f987d132c57c17e2fe267402e204b6865fb823884b90e4d59f01 1000 0 kv-store kv-store.clar --testnet', 'publish kv-store smart contract', 'true', 'a tutorial smart contract');
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('9002', 'cargo run --bin blockstack-cli contract-call 849ff31326d834f987d132c57c17e2fe267402e204b6865fb823884b90e4d59f01 1000 1 ST14N61FXVN8EENR9H3QDDZ850ES4F2QV8F98VP56 kv-store get-value -e foo --testnet', '1st set value kv-store smart contract', 'true', 'a tutorial smart contract');
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('9003', 'cargo run --bin blockstack-cli contract-call 849ff31326d834f987d132c57c17e2fe267402e204b6865fb823884b90e4d59f01 1000 2 ST14N61FXVN8EENR9H3QDDZ850ES4F2QV8F98VP56 kv-store set-value -e foo -e bar --testnet', '2nd set value kv-store smart contract', 'true', 'a tutorial smart contract');
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('9004', 'cargo run --bin blockstack-cli contract-call 849ff31326d834f987d132c57c17e2fe267402e204b6865fb823884b90e4d59f01 1000 3 ST14N61FXVN8EENR9H3QDDZ850ES4F2QV8F98VP56 kv-store get-value -e foo --testnet', 'retrieve value kv-store smart contract', 'true', 'a tutorial smart contract');
 
 
 select * from test_scenario_unit_testing;
@@ -73,9 +101,26 @@ grant all on sequence running_scenario_on_testing_environment_id_seq to blocksta
 
 INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('1' , '1');
 
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('2' , '1');
+
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('3' , '1');
+
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('4' , '1');
+
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('9001' , '9000');
+
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('9002' , '9000');
+
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('9003' , '9000');
+
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('9004' , '9000');
+
+INSERT INTO testing_environment(test_environment_id , test_working_directory , rpc_port , description , comment ) VALUES('9000' , '/home/michael/blockstack_testNet/test5/stacks-blockchain', '9000', 'local node, on test5', 'local node');
+
+
+
 //table join
 
 select testing_environment.test_working_directory as test_working_directory, testing_environment.rpc_port as rpc_port from testing_environment inner join running_scenario_on_testing_environment ON running_scenario_on_testing_environment.test_scenario_id = '1';
 
 select testing_environment.test_working_directory as test_working_directory, testing_environment.rpc_port as rpc_port from testing_environment inner join running_scenario_on_testing_environment ON running_scenario_on_testing_environment.test_scenario_id = '1';
-
