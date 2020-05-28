@@ -42,7 +42,7 @@ CREATE TABLE test_scenario_unit_testing (id SERIAL PRIMARY KEY, test_scenario_id
 
 CREATE TABLE testing_environment (id SERIAL PRIMARY KEY, test_environment_id VARCHAR(25), test_working_directory VARCHAR(255), rpc_port VARCHAR(255), description VARCHAR(25), comment VARCHAR(255));
 
-CREATE TABLE testing_result (id SERIAL PRIMARY KEY, test_result_id VARCHAR(25), test_scenario_id VARCHAR(255),  execution_time_stamp VARCHAR(25), result VARCHAR(25), comment VARCHAR(255));
+CREATE TABLE testing_result (id SERIAL PRIMARY KEY, test_scenario_id VARCHAR(255),  execution_time_stamp VARCHAR(25), result VARCHAR(25), comment VARCHAR(255));
 
 grant all privileges on table test_scenario_unit_testing to blockstack_testing_user_1;
 grant all on sequence test_scenario_unit_testing_id_seq to blockstack_testing_user_1;
@@ -121,6 +121,17 @@ INSERT INTO testing_environment(test_environment_id , test_working_directory , r
 
 //table join
 
-select testing_environment.test_working_directory as test_working_directory, testing_environment.rpc_port as rpc_port from testing_environment inner join running_scenario_on_testing_environment ON running_scenario_on_testing_environment.test_scenario_id = '1';
+select testing_environment.test_working_directory as test_working_directory, testing_environment.rpc_port as rpc_port from testing_environment inner join running_scenario_on_testing_environment ON running_scenario_on_testing_environment.test_environment_id = testing_environment.test_environment_id where running_scenario_on_testing_environment.test_scenario_id = '9001';
 
-select testing_environment.test_working_directory as test_working_directory, testing_environment.rpc_port as rpc_port from testing_environment inner join running_scenario_on_testing_environment ON running_scenario_on_testing_environment.test_scenario_id = '1';
+update test_scenario_unit_testing set run_testing_flag = 'false' where id = 1;
+update test_scenario_unit_testing set run_testing_flag = 'false' where id = 2;
+update test_scenario_unit_testing set run_testing_flag = 'false' where id = 3;
+update test_scenario_unit_testing set run_testing_flag = 'false' where id = 4;
+
+RUST_BACKTRACE=FULL BLOCKSTACK_DEBUG=1 cargo run --bin blockstack-core testnet Stacks.toml |& tee -a  trace_logging.txt
+
+CREATE TABLE test_result(id SERIAL PRIMARY KEY, root_dir VARCHAR(125), node_id VARCHAR(25), scenario_description VARCHAR(255), run_testing_flag VARCHAR(25), run_testing_result_verbiage VARCHAR(255), comment VARCHAR(255));
+
+CREATE TABLE test_result (id SERIAL PRIMARY KEY, test_scenario_id VARCHAR(25), test_scenario_input_parameters VARCHAR(255), scenario_description VARCHAR(255), test_result_verbiage text, timestamp );
+
+text

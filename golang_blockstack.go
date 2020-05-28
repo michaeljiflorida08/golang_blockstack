@@ -16,6 +16,7 @@ import (
     "log" 
     "strings"
     "errors"
+    "strconv"
 )
 
 func logging_var(input_var interface{}) {
@@ -65,7 +66,14 @@ func get_account_balance () {
 
 }
 
+type Test_Result struct {        
+    test_scenario_id string
+    test_scenario_input_parameters string
+    scenario_description string
+    test_execution_step_returned_result_verbiage string    
+}
 
+var testResult Test_Result
 
 const (
   host     = "localhost"
@@ -74,6 +82,33 @@ const (
   password = "password"
   dbname   = "blockstack_testing"  
 )
+
+func insert_testing_result (test_scenario_id string, test_scenario_input_parameters string, scenario_description string, test_result_verbiage string) {
+
+   psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+    "password=%s dbname=%s sslmode=disable",
+    host, port, user, password, dbname)
+
+    db, err := sql.Open("postgres", psqlInfo)
+
+    if err != nil {
+      fmt.Printf("error 1")      
+      panic(err)
+    }
+    defer db.Close()
+
+    id := 0
+    sqlStatement := `
+        INSERT INTO test_result (test_scenario_id , test_scenario_input_parameters , scenario_description , test_result_verbiage ) VALUES($1 , $2, $3, $4);
+                    `
+    
+    err = db.QueryRow(sqlStatement, test_scenario_id, test_scenario_input_parameters, scenario_description, test_result_verbiage).Scan(&id)
+    /*
+    if err != nil {
+      fmt.Printf("error 2")      
+      panic(err)
+    */
+}
 
 func blockchain_run_create_node_testing () {
 
@@ -169,6 +204,8 @@ func fetch_current_lineNum_log_file (logfilefulpath string) (int64) {
 
 func fetch_current_section_log_file (logfilefulpath string, lastLineNumber int64) {
 
+    fetchedTraceVerbiage := ""
+
     f, err := os.Open(logfilefulpath)
     if err != nil {
         //return 0, err
@@ -187,8 +224,8 @@ func fetch_current_section_log_file (logfilefulpath string, lastLineNumber int64
          if (line >= lastLineNumber){
 
             fmt.Println("text:" + scanner.Text())        
-            fmt.Println("line number:%d", line)       
-
+            fmt.Println("line number:%d", line)   
+            fetchedTraceVerbiage = fetchedTraceVerbiage + "text:" + scanner.Text() + "," + "line number:" + strconv.FormatInt(line, 10) + "|"    
          }
 
         line++
@@ -197,6 +234,10 @@ func fetch_current_section_log_file (logfilefulpath string, lastLineNumber int64
     if err := scanner.Err(); err != nil {
         // Handle the error
     }
+
+    result_verbiage := testResult.test_execution_step_returned_result_verbiage
+    result_verbiage = result_verbiage + fetchedTraceVerbiage
+    testResult.test_execution_step_returned_result_verbiage=result_verbiage
 }
 
 //cargo testnet start --config=./testnet/stacks-node/conf/neon-miner-conf.toml
@@ -234,7 +275,7 @@ func blockchain_launch_node (rootDir string, testingNodeID string) {
 
 func blockchain_run_testing () {
 
-    fmt.Println("blockchain_run_testing:started")                     
+    fmt.Println("blockchain_run_testing:started")  
  
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
     "password=%s dbname=%s sslmode=disable",
@@ -252,11 +293,16 @@ func blockchain_run_testing () {
     var id int 
     var test_scenario_id string 
     var test_scenario_input_parameters string
-    var scenario_description sql.NullString                
+    var scenario_description string                
     var run_testing_flag string
     var comment sql.NullString 
 
     for rows.Next() {
+
+        testResult.test_scenario_id=""
+        testResult.test_scenario_input_parameters=""
+        testResult.scenario_description=""
+        testResult.test_execution_step_returned_result_verbiage=""
         
         if err := rows.Scan(&id, &test_scenario_id, &test_scenario_input_parameters, &scenario_description, &run_testing_flag, &comment); err != nil {
             log.Fatal(err)
@@ -265,6 +311,10 @@ func blockchain_run_testing () {
         //fmt.Printf("id = %n | test_scenario_id=%s| test_scenario_input_parameters= %s |scenario_description=%s |run_testing_flag=%s|comment=%s ", id,test_scenario_id, test_scenario_input_parameters,scenario_description,comment)
 
         if (run_testing_flag == "true") {
+
+            testResult.test_scenario_id = test_scenario_id
+            testResult.test_scenario_input_parameters = test_scenario_input_parameters
+            testResult.scenario_description = scenario_description
 
             db, err := sql.Open("postgres", psqlInfo)
 
@@ -294,6 +344,9 @@ func blockchain_run_testing () {
 }
 
 func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_port string) {
+
+    result_verbiage := "workingFolder:" + workingFolder + "|" + "cmdstr:" + cmdstr + "|" + "rpc_port:" + rpc_port
+    testResult.test_execution_step_returned_result_verbiage = result_verbiage
 
     var currentLineNumber int64
     logFilePath := workingFolder + "/" + "trace_logging.txt"
@@ -326,6 +379,11 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
     for i=0;i<len(cmdSlice);i++ {
         arg[i] = cmdSlice[i]            
     }  
+
+    var test_scenario_id string
+    var test_scenario_input_parameters string
+    var scenario_description string
+    var test_execution_step_returned_result_verbiage string
     
     switch len(cmdSlice){
     case 9:
@@ -346,6 +404,14 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
         currentLineNumber = fetch_current_lineNum_log_file(logFilePath)
         golang_api_post_deploy_tx(string(run_cmd_stdout), rpc_port)
         fetch_current_section_log_file(logFilePath, currentLineNumber)
+
+        fmt.Println ("testResult ... ")
+        fmt.Println (testResult)
+        test_scenario_id = testResult.test_scenario_id
+        test_scenario_input_parameters = testResult.test_scenario_input_parameters
+        scenario_description = testResult.scenario_description        
+        test_execution_step_returned_result_verbiage = testResult.test_execution_step_returned_result_verbiage
+        insert_testing_result (test_scenario_id, test_scenario_input_parameters, scenario_description, test_execution_step_returned_result_verbiage) 
         
     case 14:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12],arg[13])
@@ -359,7 +425,14 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
         golang_api_post_deploy_tx(string(run_cmd_stdout), rpc_port)
         fetch_current_section_log_file(logFilePath, currentLineNumber)
 
-        
+        fmt.Println ("testResult ... ")
+        fmt.Println (testResult)
+        test_scenario_id = testResult.test_scenario_id
+        test_scenario_input_parameters = testResult.test_scenario_input_parameters
+        scenario_description = testResult.scenario_description        
+        test_execution_step_returned_result_verbiage = testResult.test_execution_step_returned_result_verbiage
+        insert_testing_result (test_scenario_id, test_scenario_input_parameters, scenario_description, test_execution_step_returned_result_verbiage) 
+
     case 16:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12],arg[13],arg[14],arg[15])
         run_cmd_stdout, run_cmd_err := run_cmd.Output()    
@@ -371,6 +444,14 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
         currentLineNumber = fetch_current_lineNum_log_file(logFilePath)
         golang_api_post_deploy_tx(string(run_cmd_stdout), rpc_port)
         fetch_current_section_log_file(logFilePath, currentLineNumber)
+
+        fmt.Println ("testResult ... ")
+        fmt.Println (testResult)
+        test_scenario_id = testResult.test_scenario_id
+        test_scenario_input_parameters = testResult.test_scenario_input_parameters
+        scenario_description = testResult.scenario_description        
+        test_execution_step_returned_result_verbiage = testResult.test_execution_step_returned_result_verbiage
+        insert_testing_result (test_scenario_id, test_scenario_input_parameters, scenario_description, test_execution_step_returned_result_verbiage)         
 
     case 17:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12],arg[13],arg[14],arg[15],arg[16])
