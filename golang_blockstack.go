@@ -380,11 +380,6 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
         arg[i] = cmdSlice[i]            
     }  
 
-    var test_scenario_id string
-    var test_scenario_input_parameters string
-    var scenario_description string
-    var test_execution_step_returned_result_verbiage string
-    
     switch len(cmdSlice){
     case 9:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8])
@@ -407,11 +402,7 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
 
         fmt.Println ("testResult ... ")
         fmt.Println (testResult)
-        test_scenario_id = testResult.test_scenario_id
-        test_scenario_input_parameters = testResult.test_scenario_input_parameters
-        scenario_description = testResult.scenario_description        
-        test_execution_step_returned_result_verbiage = testResult.test_execution_step_returned_result_verbiage
-        insert_testing_result (test_scenario_id, test_scenario_input_parameters, scenario_description, test_execution_step_returned_result_verbiage) 
+        insert_testing_result (testResult.test_scenario_id, testResult.test_scenario_input_parameters, testResult.scenario_description, testResult.test_execution_step_returned_result_verbiage) 
         
     case 14:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12],arg[13])
@@ -427,11 +418,7 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
 
         fmt.Println ("testResult ... ")
         fmt.Println (testResult)
-        test_scenario_id = testResult.test_scenario_id
-        test_scenario_input_parameters = testResult.test_scenario_input_parameters
-        scenario_description = testResult.scenario_description        
-        test_execution_step_returned_result_verbiage = testResult.test_execution_step_returned_result_verbiage
-        insert_testing_result (test_scenario_id, test_scenario_input_parameters, scenario_description, test_execution_step_returned_result_verbiage) 
+        insert_testing_result (testResult.test_scenario_id, testResult.test_scenario_input_parameters, testResult.scenario_description, testResult.test_execution_step_returned_result_verbiage) 
 
     case 16:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12],arg[13],arg[14],arg[15])
@@ -447,11 +434,7 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
 
         fmt.Println ("testResult ... ")
         fmt.Println (testResult)
-        test_scenario_id = testResult.test_scenario_id
-        test_scenario_input_parameters = testResult.test_scenario_input_parameters
-        scenario_description = testResult.scenario_description        
-        test_execution_step_returned_result_verbiage = testResult.test_execution_step_returned_result_verbiage
-        insert_testing_result (test_scenario_id, test_scenario_input_parameters, scenario_description, test_execution_step_returned_result_verbiage)         
+        insert_testing_result (testResult.test_scenario_id, testResult.test_scenario_input_parameters, testResult.scenario_description, testResult.test_execution_step_returned_result_verbiage) 
 
     case 17:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12],arg[13],arg[14],arg[15],arg[16])
@@ -597,7 +580,7 @@ func main() {
     
     switch arg[1] {
     case "1":
-        search_on_log_file("/home/michael/blockstack_testNet/blockchain_launch_node/node1/stacks-blockchain/trace_logging-2020-05-23_2-bk.txt", "Failed to parse HTTP request")    
+        search_on_log_file("/home/michael/blockstack_testNet/test5/stacks-blockchain/trace_logging.txt", "nonce")    
         return
     
     case "2":
