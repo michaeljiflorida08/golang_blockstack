@@ -97,17 +97,8 @@ func insert_testing_result (test_scenario_id string, test_scenario_input_paramet
     }
     defer db.Close()
 
-    id := 0
-    sqlStatement := `
-        INSERT INTO test_result (test_scenario_id , test_scenario_input_parameters , scenario_description , test_result_verbiage ) VALUES($1 , $2, $3, $4);
-                    `
-    
-    err = db.QueryRow(sqlStatement, test_scenario_id, test_scenario_input_parameters, scenario_description, test_result_verbiage).Scan(&id)
-    /*
-    if err != nil {
-      fmt.Printf("error 2")      
-      panic(err)
-    */
+    sqlStatement := `INSERT INTO test_result (test_scenario_id , test_scenario_input_parameters , scenario_description , test_result_verbiage ) VALUES($1 , $2, $3, $4);`
+    db.QueryRow(sqlStatement, test_scenario_id, test_scenario_input_parameters, scenario_description, test_result_verbiage)
 }
 
 func blockchain_run_create_node_testing () {
