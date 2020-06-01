@@ -404,8 +404,56 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
         fmt.Println (testResult)
         insert_testing_result (testResult.test_scenario_id, testResult.test_scenario_input_parameters, testResult.scenario_description, testResult.test_execution_step_returned_result_verbiage) 
         
+    case 12:
+        run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11])
+        run_cmd_stdout, run_cmd_err := run_cmd.Output()    
+        if run_cmd_err != nil {
+        fmt.Println(run_cmd_err.Error())        
+        }
+        fmt.Print("run_cmd_stdout =" + string(run_cmd_stdout))  
+
+        currentLineNumber = fetch_current_lineNum_log_file(logFilePath)
+        golang_api_post_deploy_tx(string(run_cmd_stdout), rpc_port)
+        fetch_current_section_log_file(logFilePath, currentLineNumber)
+
+        fmt.Println ("testResult ... ")
+        fmt.Println (testResult)
+        insert_testing_result (testResult.test_scenario_id, testResult.test_scenario_input_parameters, testResult.scenario_description, testResult.test_execution_step_returned_result_verbiage) 
+
+    case 13:
+        run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12])
+        run_cmd_stdout, run_cmd_err := run_cmd.Output()    
+        if run_cmd_err != nil {
+        fmt.Println(run_cmd_err.Error())        
+        }
+        fmt.Print("run_cmd_stdout =" + string(run_cmd_stdout))  
+
+        currentLineNumber = fetch_current_lineNum_log_file(logFilePath)
+        golang_api_post_deploy_tx(string(run_cmd_stdout), rpc_port)
+        fetch_current_section_log_file(logFilePath, currentLineNumber)
+
+        fmt.Println ("testResult ... ")
+        fmt.Println (testResult)
+        insert_testing_result (testResult.test_scenario_id, testResult.test_scenario_input_parameters, testResult.scenario_description, testResult.test_execution_step_returned_result_verbiage) 
+
     case 14:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12],arg[13])
+        run_cmd_stdout, run_cmd_err := run_cmd.Output()    
+        if run_cmd_err != nil {
+        fmt.Println(run_cmd_err.Error())        
+        }
+        fmt.Print("run_cmd_stdout =" + string(run_cmd_stdout))  
+
+        currentLineNumber = fetch_current_lineNum_log_file(logFilePath)
+        golang_api_post_deploy_tx(string(run_cmd_stdout), rpc_port)
+        fetch_current_section_log_file(logFilePath, currentLineNumber)
+
+        fmt.Println ("testResult ... ")
+        fmt.Println (testResult)
+        insert_testing_result (testResult.test_scenario_id, testResult.test_scenario_input_parameters, testResult.scenario_description, testResult.test_execution_step_returned_result_verbiage) 
+
+    case 15:
+        run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10],arg[11],arg[12],arg[13],arg[14])
         run_cmd_stdout, run_cmd_err := run_cmd.Output()    
         if run_cmd_err != nil {
         fmt.Println(run_cmd_err.Error())        
