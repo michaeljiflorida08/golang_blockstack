@@ -388,6 +388,11 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
         fmt.Println(run_cmd_err.Error())        
         }
         fmt.Print("run_cmd_stdout =" + string(run_cmd_stdout)) 
+        
+        fmt.Println ("testResult ... ")
+        fmt.Println (testResult)
+        insert_testing_result (testResult.test_scenario_id, testResult.test_scenario_input_parameters, testResult.scenario_description, testResult.test_execution_step_returned_result_verbiage) 
+
     case 11:
         run_cmd := exec.Command(arg[0],arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],arg[7],arg[8],arg[9],arg[10])
         run_cmd_stdout, run_cmd_err := run_cmd.Output()    
@@ -490,7 +495,12 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
         if run_cmd_err != nil {
         fmt.Println(run_cmd_err.Error())        
         }
-        fmt.Print("run_cmd_stdout =" + string(run_cmd_stdout))    
+        fmt.Print("run_cmd_stdout =" + string(run_cmd_stdout))  
+
+        fmt.Println ("testResult ... ")
+        fmt.Println (testResult)
+        insert_testing_result (testResult.test_scenario_id, testResult.test_scenario_input_parameters, testResult.scenario_description, testResult.test_execution_step_returned_result_verbiage) 
+  
     default:
         fmt.Println("not run, because parameter number not matched")                     
     }   
