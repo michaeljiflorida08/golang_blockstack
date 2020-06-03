@@ -155,3 +155,28 @@ update test_scenario_unit_testing set test_scenario_id = '9' where id = 9;
 update test_scenario_unit_testing set test_scenario_id = '10' where id = 10;
 update test_scenario_unit_testing set test_scenario_id = '11' where id = 11;
 update test_scenario_unit_testing set test_scenario_id = '12' where id = 12;
+
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('15', 'cargo run --bin blockstack-cli publish d61b6bacd2d7d407ae7d81f4e9679c4a2d72768705482ba563d8005fea48ba4101 1000 17244427697079051201 kv-store kv-store.clar --testnet', 'publish kv-store smart contract', 'true', 'argon node testing, on node5 directory, 2020-06-03:a tutorial smart contract');
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('16', 'cargo run --bin blockstack-cli contract-call d61b6bacd2d7d407ae7d81f4e9679c4a2d72768705482ba563d8005fea48ba4101 1000 17244427697079051202 ST1J47E9EXS1YEFV36V2W5S02MCPCP7R6G71EMDG1 kv-store get-value -e foo --testnet', '1st set value kv-store smart contract', 'true', 'argon node testing, on node5 directory, 2020-06-03:a tutorial smart contract');
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('17', 'cargo run --bin blockstack-cli contract-call d61b6bacd2d7d407ae7d81f4e9679c4a2d72768705482ba563d8005fea48ba4101 1000 17244427697079051203 ST1J47E9EXS1YEFV36V2W5S02MCPCP7R6G71EMDG1 kv-store set-value -e foo -e bar --testnet', '2nd set value kv-store smart contract', 'true', 'argon node testing, on node5 directory, 2020-06-03:a tutorial smart contract');
+
+INSERT INTO test_scenario_unit_testing(test_scenario_id , test_scenario_input_parameters , scenario_description , run_testing_flag , comment ) VALUES('18', 'cargo run --bin blockstack-cli contract-call d61b6bacd2d7d407ae7d81f4e9679c4a2d72768705482ba563d8005fea48ba4101 1000 17244427697079051204 ST1J47E9EXS1YEFV36V2W5S02MCPCP7R6G71EMDG1 kv-store get-value -e foo --testnet', 'retrieve value kv-store smart contract', 'true', 'argon node testing, on node5 directory, 2020-06-03:a tutorial smart contract');
+
+INSERT INTO testing_environment(test_environment_id , test_working_directory , rpc_port , description , comment ) VALUES('3' , '/home/michael/blockstack_testNet/blockchain_launch_node/node3/stacks-blockchain', '20443', 'argon node, on node5', 'argon node testing, 2020-06-03');
+
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('15' , '3');
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('16' , '3');
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('17' , '3');
+INSERT INTO running_scenario_on_testing_environment(test_scenario_id , test_environment_id) VALUES('18' , '3');
+
+update test_scenario_unit_testing set run_testing_flag = 'false' where id = 9;
+update test_scenario_unit_testing set run_testing_flag = 'false' where id = 10;
+update test_scenario_unit_testing set run_testing_flag = 'false' where id = 11;
+update test_scenario_unit_testing set run_testing_flag = 'false' where id = 12;
+
+update testing_environment set test_working_directory = '/home/michael/blockstack_testNet/blockchain_launch_node/node5/stacks-blockchain' where test_environment_id = '3';
+
+
