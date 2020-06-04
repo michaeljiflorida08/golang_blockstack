@@ -17,6 +17,7 @@ import (
     "strings"
     "errors"
     "strconv"
+    "encoding/hex"
 )
 
 func logging_var(input_var interface{}) {
@@ -368,7 +369,7 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
 
     fmt.Println("cmdSlice")
     for i=0;i<len(cmdSlice);i++ {
-        arg[i] = cmdSlice[i]            
+        arg[i] = cmdSlice[i]         
     }  
 
     run_cmd := exec.Command(arg[0])
@@ -411,7 +412,7 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
     fmt.Print("run_cmd_stdout =" + string(run_cmd_stdout))  
 
     currentLineNumber = fetch_current_lineNum_log_file(logFilePath)
-    golang_api_post_deploy_tx(string(run_cmd_stdout), rpc_port)
+    golang_api_post_deploy_tx(workingFolder, string(run_cmd_stdout), rpc_port)
     fetch_current_section_log_file(logFilePath, currentLineNumber)
 
     fmt.Println ("testResult ... ")
@@ -420,14 +421,59 @@ func blockchain_command_call_post_API (workingFolder string, cmdstr string, rpc_
 
 }
 
-func golang_api_post_deploy_tx (binaryStr string, rpcPort string) error{
+func golang_api_post_deploy_tx (workingFolder string, binaryStr string, rpcPort string) error{
 
-    print(len(binaryStr))
+    var _, err = os.Stat(workingFolder + "infile")
+    if os.IsNotExist(err) {
+    } else {
+        err = os.Remove(workingFolder + "infile")
+    }
 
-    var size int64 = int64( len(binaryStr) )
+    _, err = os.Stat(workingFolder + "outfile.bin")
+    if os.IsNotExist(err) {
+    } else {
+        err = os.Remove(workingFolder + "outfile.bin")
+    }
 
-    var outputBytes = make([]byte, size)
-    copy(outputBytes, binaryStr)
+    hx := hex.EncodeToString([]byte(binaryStr))
+    infileContent := []byte(hx)
+    errd1 := ioutil.WriteFile( workingFolder + "infile", infileContent, 0644)
+    if errd1 != nil {
+        print (errd1)
+    }
+
+    _, err = os.Getwd()
+    if err != nil {
+        fmt.Println(err)
+    }
+
+    err = os.Chdir(workingFolder)
+    _, err = os.Getwd()    
+    if err != nil {
+        fmt.Println(err)
+    }    
+
+    run_arg1 := "xxd" 
+    run_arg2 := "-r"
+    run_arg3 := "-p"
+    run_arg4 := "infile.txt"
+    run_arg5 := "outfile.bin"
+
+    run_cmd := exec.Command(run_arg1, run_arg2, run_arg3, run_arg4, run_arg5)
+
+    _, err = run_cmd.Output() 
+
+    if err != nil {
+        fmt.Println("generate outfile bin error")
+        fmt.Println(err)
+    }   
+
+    outputBytes, error := RetrieveROM (workingFolder + "/outfile.bin")
+
+    if error != nil {
+        fmt.Println("read outfile bin error")
+        fmt.Println(error)
+    }
 
     rpc_url := "http://localhost:" + rpcPort + "/v2/transactions"
 
@@ -449,6 +495,28 @@ func golang_api_post_deploy_tx (binaryStr string, rpcPort string) error{
     fmt.Println(string(body))
 
     return nil
+}
+
+func RetrieveROM(filename string) ([]byte, error) {
+    file, err := os.Open(filename)
+
+    if err != nil {
+        return nil, err
+    }
+    defer file.Close()
+
+    stats, statsErr := file.Stat()
+    if statsErr != nil {
+        return nil, statsErr
+    }
+
+    var size int64 = stats.Size()
+    bytes := make([]byte, size)
+
+    bufr := bufio.NewReader(file)
+    _,err = bufr.Read(bytes)
+
+    return bytes, err
 }
 
 //1. gitclone, change oeml, start node, running by its own thread
