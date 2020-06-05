@@ -280,6 +280,7 @@ func blockchain_run_testing () {
         log.Fatal(err)
     }
     defer rows.Close()
+    defer db.Close()
     //println(rows)
 
     var id int 
@@ -317,6 +318,7 @@ func blockchain_run_testing () {
                 log.Fatal(err)
             }
             defer rows.Close()
+            defer db.Close()
             //println(rows)
 
             var test_working_directory string 
